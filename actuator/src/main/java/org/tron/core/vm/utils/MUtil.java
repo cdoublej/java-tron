@@ -64,4 +64,11 @@ public class MUtil {
       throw new OutOfTimeException("CPU timeout for 0x0a executing");
     }
   }
+
+  public static void checkExecTime() {
+    if (ForkController.instance().pass(Parameter.ForkBlockVersionEnum.VERSION_4_7_4)) {
+      throw new OutOfTimeException("CPU timeout for 0xd8 executing");
+    }
+  }
+
 }

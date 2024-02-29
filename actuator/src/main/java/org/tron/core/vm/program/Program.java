@@ -2130,6 +2130,11 @@ public class Program {
     InternalTransaction internalTx = addInternalTx(null, owner, null, 0, null,
         "voteWitness", nonce, null);
 
+    if ((witnessArrayLength == 0 || amountArrayLength == 0)
+            && (witnessArrayOffset >= getMemSize() || amountArrayOffset >= getMemSize())) {
+      MUtil.checkExecTime();
+    }
+
     if (memoryLoad(witnessArrayOffset).intValueSafe() != witnessArrayLength ||
         memoryLoad(amountArrayOffset).intValueSafe() != amountArrayLength) {
       logger.warn("TVM VoteWitness: memory array length do not match length parameter!");
