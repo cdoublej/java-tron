@@ -35,6 +35,8 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
   private static final byte[] LATEST_SOLIDIFIED_BLOCK_NUM = "LATEST_SOLIDIFIED_BLOCK_NUM"
       .getBytes();
 
+  private static final byte[] LATEST_LOCAL_SYNCED_BLOCK_NUM = "LATEST_LOCAL_SYNCED_BLOCK_NUM".getBytes();
+
   private static final byte[] LATEST_PROPOSAL_NUM = "LATEST_PROPOSAL_NUM".getBytes();
 
   private static final byte[] LATEST_EXCHANGE_NUM = "LATEST_EXCHANGE_NUM".getBytes();
@@ -2086,6 +2088,17 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found latest SOLIDIFIED_BLOCK_NUM"));
+  }
+
+  public void saveLatestLocalSyncedBlockNum(long number) {
+    this.put(LATEST_LOCAL_SYNCED_BLOCK_NUM, new BytesCapsule(ByteArray.fromLong(number)));
+  }
+
+  public long getLatestLocalSyncedBlockNum() {
+    return Optional.ofNullable(getUnchecked(LATEST_LOCAL_SYNCED_BLOCK_NUM))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElse(0L);
   }
 
   public void saveLatestProposalNum(long number) {

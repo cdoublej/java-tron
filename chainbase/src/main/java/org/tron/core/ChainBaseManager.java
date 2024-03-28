@@ -67,6 +67,9 @@ import org.tron.core.store.VotesStore;
 import org.tron.core.store.WitnessScheduleStore;
 import org.tron.core.store.WitnessStore;
 import org.tron.core.store.ZKProofStore;
+import org.tron.core.store.sync.SyncBlockIndexStore;
+import org.tron.core.store.sync.SyncBlockStore;
+import org.tron.core.store.sync.SyncDynamicPropertiesStore;
 
 @Slf4j(topic = "DB")
 @Component
@@ -200,6 +203,15 @@ public class ChainBaseManager {
   @Autowired
   @Getter
   private TransactionHistoryStore transactionHistoryStore;
+  @Autowired
+  @Getter
+  private SyncBlockStore syncBlockStore;
+  @Autowired
+  @Getter
+  private SyncBlockIndexStore syncBlockIndexStore;
+  @Autowired
+  @Getter
+  private SyncDynamicPropertiesStore syncDynamicPropertiesStore;
 
   @Getter
   @Setter
