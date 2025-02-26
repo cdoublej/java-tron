@@ -3,6 +3,9 @@ package org.tron.core.vm;
 import static org.tron.core.Constant.DYNAMIC_ENERGY_FACTOR_DECIMAL;
 
 import com.google.common.collect.ImmutableSet;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -18,6 +21,7 @@ public class VM {
 
   private static final Set<Integer> CALL_OPS = ImmutableSet.of(Op.CALL, Op.STATICCALL,
       Op.DELEGATECALL, Op.CALLCODE, Op.CALLTOKEN);
+  public static Map<String, Map<String, Long>> opTimeRecords = new HashMap<>();
 
   public static void play(Program program, JumpTable jumpTable) {
     try {
@@ -34,6 +38,7 @@ public class VM {
         }
 
         try {
+          long begin = System.nanoTime();
           Operation op = jumpTable.get(program.getCurrentOpIntValue());
           if (!op.isEnabled()) {
             throw Program.Exception.invalidOpCode(program.getCurrentOp());
@@ -88,6 +93,23 @@ public class VM {
           op.execute(program);
 
           program.setPreviouslyExecutedOp((byte) op.getOpcode());
+          long end = System.nanoTime();
+          long cost = end - begin;
+          if (!opTimeRecords.containsKey(opName)) {
+            Map<String, Long> metrics= new HashMap<>();
+            metrics.put("time", cost);
+            metrics.put("count", 1L);
+            metrics.put("maxTime", cost);
+            metrics.put("minTime", cost);
+            opTimeRecords.put(opName, metrics);
+          } else {
+            Map<String, Long> metrics = opTimeRecords.get(opName);
+            metrics.put("time", metrics.get("time") + cost);
+            metrics.put("count", metrics.get("count") + 1);
+            metrics.put("maxTime", metrics.get("maxTime") > cost ? metrics.get("maxTime") : cost);
+            metrics.put("minTime", metrics.get("minTime") < cost ? metrics.get("minTime") : cost);
+          }
+
         } catch (RuntimeException e) {
           logger.info("VM halted: [{}]", e.getMessage());
           if (!(e instanceof TransferException)) {
